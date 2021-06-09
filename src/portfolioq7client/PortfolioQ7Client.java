@@ -54,6 +54,16 @@ public class PortfolioQ7Client extends Application {
         vBox.setSpacing(10);
         vBox.getChildren().addAll(startBtn, openBtn, textField, sendBtn);
         
+        new Thread() {
+            public void run() {
+                try {
+                    client.connect();
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "Error: Thread: " + e);
+                }
+            }
+        }.start();
+        
         scene = new Scene(vBox, 300, 150);
         stage.setScene(scene);
         stage.show();
@@ -81,7 +91,7 @@ public class PortfolioQ7Client extends Application {
                 client.sendFile(file);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e);
+            JOptionPane.showMessageDialog(null, "Error: sendButton: " + e);
         }
     }
     public static void main(String[] args) throws IOException {
