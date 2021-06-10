@@ -9,7 +9,6 @@ package portfolioq7client;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -27,8 +26,6 @@ public class PortfolioQ7Client extends Application {
     private Button sendBtn;
     private TextField textField;
     static Socket socket;
-    private InputStream is;
-    private BufferedOutputStream bos;
     private File file;
     static Client client = new Client();
     
@@ -67,13 +64,13 @@ public class PortfolioQ7Client extends Application {
         scene = new Scene(vBox, 300, 150);
         stage.setScene(scene);
         stage.show();
-        
     }
     public void startButtonClicked() {
         try {
+            client.closeAll();
             client.connect();
         } catch (IOException e) {
-            
+//            JOptionPane.showMessageDialog(null, "Error: Thread: " + e);
         }
         
     }
@@ -95,8 +92,6 @@ public class PortfolioQ7Client extends Application {
         }
     }
     public static void main(String[] args) throws IOException {
-        
         launch(args);
-//        client.connect();
     }
 }

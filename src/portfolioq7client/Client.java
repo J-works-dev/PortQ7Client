@@ -1,7 +1,6 @@
 package portfolioq7client;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
@@ -11,99 +10,32 @@ public class Client extends Thread {
     private BufferedInputStream bis;
     private OutputStream os;
     private BufferedOutputStream bos;
-    private boolean isOpen = false;
     
     public void connect() throws IOException {
         socket = new Socket("localhost", 9999);
         System.out.println(socket.getInetAddress().getLocalHost().getHostName() + ": connected");
-//        run();
         receiveFile(socket);
-//        ReceiveThread rt = new ReceiveThread();
-//        rt.setSocket(socket);
-//        rt.setIs(is);
-//        rt.setBos(bos);
+        closeAll();
     }
     
-    @Override
-    public void run() {
-        try {
-            byte[] fileBytes = new byte[1024];
-        
-            String fileName = "data.csv";
-    //        BufferedReader buf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    //        String receivedString = buf.readLine();
-    //        String[] clientMsg = receivedString.split(",");
-    //        if (clientMsg[0].equals("fileName:")) {
-    //            fileName = clientMsg[1];
-    //        }
-
-            is = socket.getInputStream();
-            bos = new BufferedOutputStream(new FileOutputStream(fileName));
-
-            while (true) {
-                int bytesRead = is.read(fileBytes, 0, fileBytes.length);
-                bos.write(fileBytes, 0, bytesRead);
-                bos.flush();
-
-                if (bytesRead < fileBytes.length) {
-                    JOptionPane.showMessageDialog(null, "File received from Server");
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e);
-        } finally {
-            try {
-                closeAll();
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error: " + e);
-            }
-        }
-    }
     public void receiveFile(Socket socket) throws IOException {
         byte[] fileBytes = new byte[1024];
-        
-            String fileName = "data.csv";
-//            BufferedReader buf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            String receivedString = buf.readLine();
-//            String[] clientMsg = receivedString.split(",");
-//            if (clientMsg[0].equals("fileName:")) {
-//                fileName = clientMsg[1];
-//            }
+        String fileName = "data.csv";
+        is = socket.getInputStream();
+        bos = new BufferedOutputStream(new FileOutputStream(fileName, false));
 
-            is = socket.getInputStream();
-            bos = new BufferedOutputStream(new FileOutputStream(fileName, true));
+        while (true) {
+            int bytesRead = is.read(fileBytes, 0, fileBytes.length);
+            bos.write(fileBytes, 0, bytesRead);
+            bos.flush();
 
-            while (true) {
-//                if (!isOpen) {
-//                    BufferedReader buf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                    String receivedString = buf.readLine();
-//                    String[] clientMsg = receivedString.split(",");
-//                    if (clientMsg[0].equals("fileName:")) {
-//                        fileName = clientMsg[1];
-//                    }
-//                    isOpen = true;
-//                }
-                try {
-                    int bytesRead = is.read(fileBytes, 0, fileBytes.length);
-                    bos.write(fileBytes, 0, bytesRead);
-                    bos.flush();
-
-                    if (bytesRead < fileBytes.length) {
-                        JOptionPane.showMessageDialog(null, "File received from Server");
-                    }
-                } catch (Exception e) {
-//                    JOptionPane.showMessageDialog(null, "Error: " + e);
-                }
-                
-            }        
+            if (bytesRead < fileBytes.length) {
+                JOptionPane.showMessageDialog(null, "File received from Server");
+            }
+        }        
     }
     
     public void sendFile(File file) throws IOException {
-//        PrintWriter pw = new PrintWriter(socket.getOutputStream()); 
-//        pw.println("fileName:," + file.getName());
-//        pw.flush();
-//        pw.close();
-        
         byte[] fileBytes = new byte[(int) file.length()];
         os = socket.getOutputStream();
 
@@ -119,6 +51,6 @@ public class Client extends Thread {
         bis.close();
         os.close();
         bos.close();
-//        socket.close();
+        socket.close();
     }
 }
